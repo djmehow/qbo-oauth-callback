@@ -1,166 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TATUS REPORTER — Authorisation</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f5f5f5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 40px;
-      max-width: 520px;
-      width: 100%;
-      box-shadow: 0 2px 20px rgba(0,0,0,0.08);
-    }
-    .logo {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #aaa;
-      margin-bottom: 24px;
-    }
-    h1 { font-size: 22px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
-    .subtitle { font-size: 14px; color: #666; margin-bottom: 32px; line-height: 1.6; }
-    .field { margin-bottom: 16px; }
-    .field label {
-      display: block;
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #aaa;
-      margin-bottom: 6px;
-    }
-    .field-row { display: flex; gap: 8px; }
-    .field-value {
-      flex: 1;
-      background: #f8f8f8;
-      border: 1px solid #e8e8e8;
-      border-radius: 6px;
-      padding: 10px 12px;
-      font-family: 'SF Mono', Monaco, 'Courier New', monospace;
-      font-size: 12px;
-      color: #1a1a1a;
-      word-break: break-all;
-      line-height: 1.5;
-    }
-    .copy-btn {
-      background: #1a1a1a;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 14px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.15s;
-      align-self: flex-start;
-    }
-    .copy-btn:hover { background: #333; }
-    .copy-btn.copied { background: #2d7d46; }
-    hr { border: none; border-top: 1px solid #f0f0f0; margin: 28px 0; }
-    .instruction { font-size: 13px; color: #666; line-height: 1.7; }
-    .instruction strong { color: #1a1a1a; }
-    .warning {
-      background: #fffbf0;
-      border: 1px solid #ffe082;
-      border-radius: 6px;
-      padding: 12px 14px;
-      font-size: 13px;
-      color: #7a5f00;
-      margin-top: 16px;
-    }
-    .error h1 { color: #c0392b; }
-    .error-box {
-      background: #fff5f5;
-      border: 1px solid #fcc;
-      border-radius: 6px;
-      padding: 12px 14px;
-      font-size: 13px;
-      color: #c0392b;
-      margin-top: 16px;
-      line-height: 1.5;
-    }
-    .idle h1 { color: #999; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Tatus · QuickBooks OAuth callback</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#252a34; --ink:#e7eaf0;
+    --muted:#9aa3b2; --accent:#7c5cff; --ok:#2fbf71; --err:#e5484d;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;
+    background:radial-gradient(1200px 600px at 50% -10%,#1b2030,var(--bg));
+    color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:24px}
+  .card{width:min(620px,100%);background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.2px}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 16px var(--accent)}
+  h1{font-size:19px;margin:20px 0 4px}
+  p{color:var(--muted);margin:6px 0}
+  .field{margin-top:18px}
+  .label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+  .code{display:flex;gap:8px}
+  input[readonly]{flex:1;font-family:var(--mono);font-size:14px;background:#0d0f14;
+    border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:12px 14px;overflow:auto}
+  button{border:1px solid var(--line);background:#20242e;color:var(--ink);
+    border-radius:10px;padding:0 16px;font-weight:600;cursor:pointer}
+  button:hover{border-color:var(--accent)}
+  .status{display:inline-flex;align-items:center;gap:8px;font-weight:600;margin-top:2px}
+  .status.ok{color:var(--ok)} .status.err{color:var(--err)}
+  .steps{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);font-size:14px}
+  .steps code{font-family:var(--mono);background:#0d0f14;border:1px solid var(--line);
+    padding:2px 6px;border-radius:6px}
+  .code button{flex:none}
+  .foot{margin-top:22px;font-size:12px;color:var(--muted)}
+</style>
 </head>
-<body>
-  <div class="card" id="card"></div>
-  <script>
-    const p = new URLSearchParams(window.location.search);
-    const code    = p.get('code');
-    const realmId = p.get('realmId');
-    const error   = p.get('error');
-    const card    = document.getElementById('card');
+<body data-provider="QuickBooks">
+  <div class="card">
+    <div class="brand"><span class="dot"></span> Tatus Consultancy · QuickBooks integration</div>
+    <h1 id="headline">Waiting for authorisation…</h1>
+    <p id="subhead">This page receives the sign-in result from QuickBooks. Nothing is sent anywhere — the values below are read locally by your reporting tool.</p>
 
-    window.copyValue = function(btn, id) {
-      const text = document.getElementById(id).textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        btn.textContent = 'Copied!';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-      });
-    };
+    <div id="result" style="display:none">
+      <div class="field">
+        <div class="label">Full redirect URL</div>
+        <div class="code">
+          <input id="fullurl" readonly value="">
+          <button data-copy="fullurl">Copy</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="label">Authorisation code</div>
+        <div class="code">
+          <input id="code" readonly value="">
+          <button data-copy="code">Copy</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="label">Company ID (realmId)</div>
+        <div class="code">
+          <input id="realmId" readonly value="">
+          <button data-copy="realmId">Copy</button>
+        </div>
+      </div>
+    </div>
 
-    function esc(s) {
-      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    }
+    <div class="steps">
+      <div class="status" id="status">—</div>
+      <p style="margin-top:10px">Back in your terminal, at the <code>python3 qbo_auth.py &lt;client&gt;</code> prompt, paste the
+      <strong>full redirect URL</strong> above. The code expires within minutes.</p>
+    </div>
 
-    function field(label, id, value) {
-      return `
-        <div class="field">
-          <label>${label}</label>
-          <div class="field-row">
-            <div class="field-value" id="${id}">${esc(value)}</div>
-            <button class="copy-btn" onclick="copyValue(this,'${id}')">Copy</button>
-          </div>
-        </div>`;
-    }
+    <div class="foot">Static page · no server · no cookies · holds no secrets. Public repo by design.</div>
+  </div>
 
-    if (code) {
-      card.innerHTML = `
-        <div class="logo">Tatus Reporter</div>
-        <h1>&#10003;&nbsp; Authorised</h1>
-        <p class="subtitle">Copy the value${realmId ? 's' : ''} below and paste into the terminal when prompted.</p>
-        ${field('Full redirect URL', 'fullurl', window.location.href)}
-        ${field('Authorisation Code', 'code', code)}
-        ${realmId ? field('Company ID (realmId)', 'realmId', realmId) : ''}
-        <hr>
-        <p class="instruction">
-          Switch back to Terminal and paste each value at the prompt.<br>
-          <strong>Keep this tab open</strong> until onboarding confirms success.
-        </p>
-        <div class="warning">&#9888;&nbsp; This code expires within minutes — paste it now.</div>
-      `;
-    } else if (error) {
-      card.classList.add('error');
-      card.innerHTML = `
-        <div class="logo">Tatus Reporter</div>
-        <h1>Authorisation failed</h1>
-        <p class="subtitle">Authorisation returned an error. Close this tab and try again.</p>
-        <div class="error-box"><strong>${esc(error)}</strong>${p.get('error_description') ? ': ' + esc(p.get('error_description')) : ''}</div>
-      `;
-    } else {
-      card.classList.add('idle');
-      card.innerHTML = `
-        <div class="logo">Tatus Reporter</div>
-        <h1>Nothing here yet</h1>
-        <p class="subtitle">This page is used by Tatus Reporter to complete authorisation. It will show your authorisation code once you approve access.</p>
-      `;
-    }
-  </script>
+<script src="app.js"></script>
 </body>
 </html>

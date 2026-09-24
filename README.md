@@ -15,4 +15,5 @@ reporting tool (`python3 qbo_auth.py <client>` or `python3 onboard.py`).
   that happens locally in the private reporting tool.
 - The authorization code it displays is single-use, short-lived and worthless
   without the client secret, so there are no secrets to protect here.
-- URL values are HTML-escaped before display.
+- URL values are shown in read-only inputs (never parsed as HTML), and a strict
+  Content-Security-Policy blocks any script other than `app.js`.
